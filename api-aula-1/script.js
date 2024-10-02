@@ -1,3 +1,4 @@
+
 const express = require('express')
 const app = express();
 
@@ -13,35 +14,57 @@ const nome = "T-55A";
 
 app.get('/visualizar', (req, res) =>{
     res.send(personList)
+    
+    
 })
 
-app.post(`/params/:id`, (req, res) =>{
+app.post(`/params`, (req, res) =>{
+
+    const {name} = req.params;
+    res.send(name)
+
+    const {age} = req.params;
+    res.send(age)
 
     const {id} = req.params;
     res.send(id)
 })
 
-
-app.delete(`/deletar`, (req, res) =>{
+// deletar usuário no array
+app.delete(`/deletar/:id`, (req, res) =>{
+    const {id} = req.params;
+    if(personList[ id - 1]){
+        personList.splice(id ,1 - 1)
+        res.send('Usuário deletado com sucesso');
+    }else{
+        res.send(404).send('Usuário não encontrado')
+    }
 
     const {name, age} = req.body
     personList.pop()
     res.send(`O usuário foi removido! o nome do usuário foi ${name}`)
 })
 
-
+// atualizar array
 app.put(`/update`, (req, res) =>{
     
+    const {id} = req.params;
     const{name, age} = req.body
-    personList.put("CPF")
-    res.send(`Os dados do usuário foi alterado! esse usuário foi ${name}`)
+    try{
+        personList[ id - 1] = {id, nome, age};
+        res.send(`Os dados do usuário foi alterado! esse usuário foi ${id} \n Novo nome: ${name} \n nova idade ${age} `);
+    }catch(err){
+        res.send("Usuário não encontrado")
+    }
+    
 })
 
-
- app.post('/cadastrar', (req,res) => {
-    const { name, age} = req.body;
-    personList.push({name, age})
-     res.send(`Usuário recebido! nome do usuários ${name}`)
+// cadastrar o usuário
+ app.post('/cadastrar', (req, res) => {
+    const {name, age} = req.body;
+    const id   = personList.length;
+    personList.push({id, name, age})
+     res.send(`Usuário recebido!\nID: ${id}\n nome do usuário: ${name}\n age: ${age} `)
 
  })
 
